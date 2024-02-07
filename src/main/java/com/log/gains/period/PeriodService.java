@@ -6,9 +6,12 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PeriodService {
+
+    // TODO
     public List<Day> getPeriodDays (LocalDate date, Period type) {
         LocalDate firstDay;
 
@@ -17,5 +20,6 @@ public class PeriodService {
         } else if (type.equals(Period.MONTH)) {
             firstDay = date.withDayOfMonth(1);
         }
+        return new ArrayList<Day>();
     }
 }

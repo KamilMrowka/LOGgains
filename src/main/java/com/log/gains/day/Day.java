@@ -1,20 +1,34 @@
-package com.log.gains.period.day;
+package com.log.gains.day;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.hibernate.annotations.NotFound;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
+@Table (
+        name = "_day"
+)
 public class Day {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dayId;
+    @Column (
+            nullable = false
+    )
+    private Long userId;
+    @Column (
+            nullable = true
+    )
     private double weightMeasurement;
+    @Column (
+            nullable = true
+    )
     private double caloriesConsumed;
+    @Column(
+            nullable = false
+    )
     private LocalDate dataDate;
 
     public Day(Long dayId, double weightMeasurement, double caloriesConsumed) {
@@ -65,6 +79,18 @@ public class Day {
 
     public void setDataDate(LocalDate dataDate) {
         this.dataDate = dataDate;
+    }
+
+    public void setDayId(Long dayId) {
+        this.dayId = dayId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     @Override

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -15,7 +16,8 @@ public class WeekController {
 
     private WeekService weekService;
 
+    // TODO
     public List<Day> getWeek (LocalDate date) {
-        return weekService.
+        return new ArrayList<Day>();
     }
 }
