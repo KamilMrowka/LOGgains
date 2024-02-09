@@ -16,11 +16,11 @@ public class Week {
     )
     private Long id;
     private LocalDate firstDay;
-    private LocalDate lastDate;
+    private LocalDate lastDay;
 
-    public Week(LocalDate firstDay, LocalDate lastDate) {
+    public Week(LocalDate firstDay, LocalDate lastDay) {
         this.firstDay = firstDay;
-        this.lastDate = lastDate;
+        this.lastDay = lastDay;
     }
 
     public Week() {
@@ -42,12 +42,12 @@ public class Week {
         this.firstDay = firstDay;
     }
 
-    public LocalDate getLastDate() {
-        return lastDate;
+    public LocalDate getLastDay() {
+        return lastDay;
     }
 
-    public void setLastDate(LocalDate lastDate) {
-        this.lastDate = lastDate;
+    public void setLastDay(LocalDate lastDate) {
+        this.lastDay = lastDate;
     }
 
     @Override
@@ -55,12 +55,12 @@ public class Week {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Week week = (Week) o;
-        return Objects.equals(id, week.id) && Objects.equals(firstDay, week.firstDay) && Objects.equals(lastDate, week.lastDate);
+        return Objects.equals(id, week.id) && Objects.equals(firstDay, week.firstDay) && Objects.equals(lastDay, week.lastDay);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstDay, lastDate);
+        return Objects.hash(id, firstDay, lastDay);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class Week {
         return "Week{" +
                 "id=" + id +
                 ", firstDay=" + firstDay +
-                ", lastDate=" + lastDate +
+                ", lastDate=" + lastDay +
                 '}';
     }
 }

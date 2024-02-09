@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DayDAO{
-    void createDay(Day day);
+    void saveDay(Day day);
     List<Day> getAllUsersDays(Long userId);
     void updateUsersDay(Day day);
 

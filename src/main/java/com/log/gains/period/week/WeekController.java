@@ -1,30 +1,23 @@
 package com.log.gains.period.week;
 
-import com.log.gains.day.Day;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
-@Controller
-@RequestMapping("/api/v1/week")
-@RequiredArgsConstructor
+@RestController
+@RequestMapping("api/v1/week")
 public class WeekController {
 
-    private WeekService weekService;
+    private final WeekService weekService;
 
-//     TODO return users week that contains the provided day
-    public List<List<Day>> getWeeks (LocalDate date, Integer weeks) {
-        return null;
+    public WeekController(WeekService weekService) {
+        this.weekService = weekService;
     }
 
-
-
-//    TODO
-    public Double getMedian (LocalDate date) {
-        return Double.valueOf(0);
+    @GetMapping
+    public Week getWeekData (@RequestBody String date) {
+        return weekService.getWeek(date);
     }
 }

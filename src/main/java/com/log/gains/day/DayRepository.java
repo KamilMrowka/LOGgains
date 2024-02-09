@@ -1,6 +1,5 @@
 package com.log.gains.day;
 
-import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,11 +9,10 @@ import java.util.Optional;
 
 @Repository
 public interface DayRepository extends JpaRepository<Day, Long> {
-    boolean existsDayByDataDate(LocalDate date);
+    boolean existsDayByDate(LocalDate date);
+    Optional<Day> getDayByDateAndUserId (LocalDate date, Long userId);
 
-    Optional<Day> getDayByDataDateAndUserId (LocalDate date, Long userId);
-
-    boolean existsDayByDataDateAndUserId (LocalDate localDate, Long userID);
+    boolean existsDayByDateAndUserId(LocalDate localDate, Long userID);
 
     List<Day> findAllByUserId (Long userId);
 }

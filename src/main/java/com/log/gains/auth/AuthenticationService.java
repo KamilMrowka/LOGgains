@@ -1,5 +1,6 @@
 package com.log.gains.auth;
 
+import com.log.gains.exception.EmailNotValidException;
 import com.log.gains.jwt.JwtService;
 import com.log.gains.exception.EmailAlreadyExistsException;
 import com.log.gains.exception.UsernameAlreadyTakenException;
@@ -13,6 +14,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -23,6 +27,8 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register (RegistrationRequest request) {
+
+        validateEmail(request.getEmail());
 
         if (repository.findByUsername(request.getUsername()).isPresent()) {
             throw new UsernameAlreadyTakenException("Username is already taken");
@@ -60,5 +66,14 @@ public class AuthenticationService {
         var user = repository.findByUsername(request.getUsername()).orElseThrow();
         String jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder().token(jwtToken).build();
+    }
+
+    public void validateEmail (String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        if (!matcher.matches()) {
+            throw new EmailNotValidException("Not a valid email");
+        }
     }
 }

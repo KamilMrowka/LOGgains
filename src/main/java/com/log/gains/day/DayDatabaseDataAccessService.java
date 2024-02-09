@@ -1,6 +1,5 @@
 package com.log.gains.day;
 
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -16,7 +15,7 @@ public class DayDatabaseDataAccessService implements DayDAO{
     }
 
     @Override
-    public void createDay(Day day) {
+    public void saveDay(Day day) {
         dayRepository.save(day);
     }
 
@@ -37,11 +36,11 @@ public class DayDatabaseDataAccessService implements DayDAO{
 
     @Override
     public Optional<Day> getUsersDayByDate(LocalDate date, Long userID) {
-        return dayRepository.getDayByDataDateAndUserId(date, userID);
+        return dayRepository.getDayByDateAndUserId(date, userID);
     }
 
     @Override
     public boolean existsDayByUserIDAndDate(LocalDate date, Long userID) {
-        return dayRepository.existsDayByDataDateAndUserId(date, userID);
+        return dayRepository.existsDayByDateAndUserId(date, userID);
     }
 }

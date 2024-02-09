@@ -1,13 +1,12 @@
 package com.log.gains.day;
 
-import com.log.gains.jwt.JwtService;
 import com.log.gains.exception.*;
-import com.log.gains.user.UserRepository;
+import com.log.gains.period.month.MonthService;
+import com.log.gains.period.week.WeekService;
 import com.log.gains.user.UserService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -16,11 +15,16 @@ import java.util.List;
 @Service
 public class DayService {
     private final DayDAO dayDAO;
-    private UserService userService;
+    private final UserService userService;
+    private final WeekService weekService;
+    private final MonthService monthService;
 
-    public DayService(@Qualifier("database") DayDAO dayDAO, JwtService jwtService, UserRepository userRepository, UserService userService) {
+
+    public DayService(@Qualifier("database") DayDAO dayDAO, UserService userService, WeekService weekService, MonthService monthService) {
         this.dayDAO = dayDAO;
         this.userService = userService;
+        this.weekService = weekService;
+        this.monthService = monthService;
     }
 
 
@@ -33,14 +37,15 @@ public class DayService {
         if (dayDTO.date() != null) {
             try {
                 date = LocalDate.parse(dayDTO.date());
+                if (date.isBefore(LocalDate.of(2023,1, 1)) || date.isAfter(LocalDate.of(2100, 1, 1))) {
+                    throw new NotStagedDateException("Select a day from 2023 upwards and before the year of 2100");
+                }
             } catch (Exception e) {
                 throw new UnacceptedDateFormatException(
                         "No date provided or provided date has wrong format. F: 'YEAR-MM-DD'"
                 );
             }
         }
-
-        //Two day entities with same date are not allowed TODO: (for the same user)
         if (dayDTO.date() == null) {
             if (dayDAO.existsDayByUserIDAndDate(LocalDate.now(), userService.getIdByUsername(currentUsername))) {
                 throw new DayAlreadyExistsException("Day already exists. Failed to create.");
@@ -60,12 +65,14 @@ public class DayService {
             day.setCaloriesConsumed(dayDTO.caloriesConsumed());
         }
         if (dayDTO.date() == null) {
-            day.setDataDate(LocalDate.now());
+            day.setDate(LocalDate.now());
         } else {
-            day.setDataDate(LocalDate.parse(dayDTO.date()));
+            day.setDate(LocalDate.parse(dayDTO.date()));
         }
         day.setUserId(userService.getIdByUsername(currentUsername));
-        dayDAO.createDay(day);
+        day.setWeekId(weekService.getCorrespondingWeekId(day.getDate()));
+        day.setMonthId(monthService.getCorrespondingMonthId(day.getDate()));
+        dayDAO.saveDay(day);
     }
 
     public void deleteExistingDay(String date) {
@@ -93,7 +100,7 @@ public class DayService {
 
     public void updateUsersDay (RequestedDayUpdateDTO updateDTO) {
 
-        LocalDate date = null;
+        LocalDate date;
 
         //Date is required to update a day
         if (updateDTO.date() == null) {
