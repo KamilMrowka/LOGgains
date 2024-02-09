@@ -16,8 +16,15 @@ public class WeekController {
 
     private WeekService weekService;
 
-    // TODO
-    public List<Day> getWeek (LocalDate date) {
-        return new ArrayList<Day>();
+//     TODO return users week that contains the provided day
+    public List<List<Day>> getWeeks (LocalDate date, Integer weeks) {
+        return null;
+    }
+
+
+
+//    TODO
+    public Double getMedian (LocalDate date) {
+        return Double.valueOf(0);
     }
 }
