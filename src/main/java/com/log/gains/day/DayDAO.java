@@ -15,4 +15,8 @@ public interface DayDAO{
 
     boolean existsDayByUserIDAndDate(LocalDate date, Long userID);
 
+    List<Day> findDaysByWeekIdAndUserId (Long weekId, Long userId);
+
+    List<Day> findDaysByMonthIdAndUserId (Long monthId, Long userId);
+
 }

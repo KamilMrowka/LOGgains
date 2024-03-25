@@ -9,5 +9,6 @@ import java.util.Optional;
 @Repository
 public interface WeekRepository extends JpaRepository<Week, Long> {
 
-    public Optional<Week> getWeekByFirstDay (LocalDate firstDay);
+    Optional<Week> getWeekByFirstDay(LocalDate firstDay);
+
 }

@@ -15,4 +15,8 @@ public interface DayRepository extends JpaRepository<Day, Long> {
     boolean existsDayByDateAndUserId(LocalDate localDate, Long userID);
 
     List<Day> findAllByUserId (Long userId);
+
+    List<Day> findDaysByWeekIdAndUserId (Long weekId, Long userId);
+
+    List<Day> findDaysByMonthIdAndUserId (Long monthId, Long userId);
 }

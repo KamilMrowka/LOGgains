@@ -11,9 +11,22 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: loggainsbusiness@gmail.com
+    password: LogGainsBusiness420
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
 
 logging:
   level:
     org:
       springframework:
         security: DEBUG
+        web: DEBUG
+
+

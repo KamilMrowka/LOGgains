@@ -1,7 +1,9 @@
 package com.log.gains.day;
 
 import com.log.gains.exception.*;
+import com.log.gains.period.PeriodService;
 import com.log.gains.period.month.MonthService;
+import com.log.gains.period.week.Week;
 import com.log.gains.period.week.WeekService;
 import com.log.gains.user.UserService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,14 +19,13 @@ public class DayService {
     private final DayDAO dayDAO;
     private final UserService userService;
     private final WeekService weekService;
-    private final MonthService monthService;
+    private final MonthService monthservice;
 
-
-    public DayService(@Qualifier("database") DayDAO dayDAO, UserService userService, WeekService weekService, MonthService monthService) {
+    public DayService(@Qualifier("database") DayDAO dayDAO, UserService userService, WeekService weekService, MonthService monthService, PeriodService periodService, WeekService weekService1, MonthService service, MonthService monthservice, MonthService monthservice1) {
         this.dayDAO = dayDAO;
         this.userService = userService;
         this.weekService = weekService;
-        this.monthService = monthService;
+        this.monthservice = monthService;
     }
 
 
@@ -37,22 +38,18 @@ public class DayService {
         if (dayDTO.date() != null) {
             try {
                 date = LocalDate.parse(dayDTO.date());
-                if (date.isBefore(LocalDate.of(2023,1, 1)) || date.isAfter(LocalDate.of(2100, 1, 1))) {
-                    throw new NotStagedDateException("Select a day from 2023 upwards and before the year of 2100");
-                }
             } catch (Exception e) {
                 throw new UnacceptedDateFormatException(
                         "No date provided or provided date has wrong format. F: 'YEAR-MM-DD'"
                 );
             }
-        }
-        if (dayDTO.date() == null) {
-            if (dayDAO.existsDayByUserIDAndDate(LocalDate.now(), userService.getIdByUsername(currentUsername))) {
+
+            if (dayDAO.existsDayByUserIDAndDate(date, userService.getIdByUsername(currentUsername))) {
+                System.out.println(dayDTO.date());
                 throw new DayAlreadyExistsException("Day already exists. Failed to create.");
             }
         } else {
-            if (dayDAO.existsDayByUserIDAndDate(date, userService.getIdByUsername(currentUsername))) {
-                System.out.println(dayDTO.date());
+            if (dayDAO.existsDayByUserIDAndDate(LocalDate.now(), userService.getIdByUsername(currentUsername))) {
                 throw new DayAlreadyExistsException("Day already exists. Failed to create.");
             }
         }
@@ -71,7 +68,7 @@ public class DayService {
         }
         day.setUserId(userService.getIdByUsername(currentUsername));
         day.setWeekId(weekService.getCorrespondingWeekId(day.getDate()));
-        day.setMonthId(monthService.getCorrespondingMonthId(day.getDate()));
+        day.setMonthId(monthservice.getCorrespondingMonthId(day.getDate()));
         dayDAO.saveDay(day);
     }
 

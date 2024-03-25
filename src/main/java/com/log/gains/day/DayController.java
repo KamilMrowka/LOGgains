@@ -1,5 +1,6 @@
 package com.log.gains.day;
 
+import com.log.gains.date.DateService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -8,13 +9,16 @@ import java.util.List;
 @RestController
 public class DayController {
     private final DayService dayService;
+    private final DateService dateService;
 
-    public DayController(DayService dayService) {
+    public DayController(DayService dayService, DateService dateService) {
         this.dayService = dayService;
+        this.dateService = dateService;
     }
 
     @PostMapping
     public void createNewDay (@RequestBody RequestNewDayDTO dayDTO) {
+        // Long userId = getAuthUser();
         dayService.createDay(dayDTO);
     }
 

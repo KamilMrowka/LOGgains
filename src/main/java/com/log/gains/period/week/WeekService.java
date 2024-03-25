@@ -1,27 +1,48 @@
 package com.log.gains.period.week;
 
+import com.log.gains.day.Day;
+import com.log.gains.day.DayDAO;
+import com.log.gains.day.DayRepository;
+import com.log.gains.day.DayService;
+import com.log.gains.exception.NotStagedDateException;
 import com.log.gains.exception.UnacceptedDateFormatException;
+import com.log.gains.period.PeriodService;
+import com.log.gains.user.UserService;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class WeekService {
 
     private final WeekDao weekDao;
+    private final DayDAO dayDAO;
+    private final UserService userService;
+    private final PeriodService periodService;
+
 
     private LocalDate getFirstDay (LocalDate date) {
         return date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
     }
 
-    public WeekService(WeekDao weekDao) {
+    public WeekService(WeekDao weekDao, PeriodService periodService, @Lazy DayService dayService, DayRepository dayRepository, DayDAO dayDAO, UserService userService, PeriodService periodService1) {
         this.weekDao = weekDao;
+        this.dayDAO = dayDAO;
+        this.userService = userService;
+        this.periodService = periodService1;
     }
 
     private Long createWeek (LocalDate includedDay) {
+        if (includedDay.isBefore(LocalDate.of(2023,1, 1)) || includedDay.isAfter(LocalDate.of(2100, 1, 1))) {
+            throw new NotStagedDateException("Select a day from 2023 upwards and before the year of 2100");
+        }
         LocalDate firstDay = getFirstDay(includedDay);
         LocalDate lastDay = includedDay.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
         Week week = new Week(firstDay, lastDay);
@@ -41,6 +62,12 @@ public class WeekService {
         return correspondingWeekId;
     }
 
+    public Long getCorrespondingWeekIdIfExists (LocalDate date) {
+        LocalDate firstDay = getFirstDay(date);
+        Week week = weekDao.getWeekByFirstDay(firstDay).orElseThrow();
+        return week.getId();
+    }
+
     public Week getWeek (String dateString) {
         LocalDate date;
         try {
@@ -51,4 +78,17 @@ public class WeekService {
         LocalDate firstDay = getFirstDay(date);
         return weekDao.getWeekByFirstDay(firstDay).orElseThrow();
     }
+
+    public double getUsersWeekMedianWeight (LocalDate date) {
+        Long weekId = getCorrespondingWeekId(date);
+        List<Day> weekDays = findUsersDaysByWeekId(weekId);
+        return periodService.getMedianWeight(weekDays);
+    }
+
+    public List<Day> findUsersDaysByWeekId (Long weekId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return dayDAO.findDaysByWeekIdAndUserId(weekId, userService.getIdByUsername(username));
+    }
+
 }

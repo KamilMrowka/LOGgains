@@ -43,4 +43,14 @@ public class DayDatabaseDataAccessService implements DayDAO{
     public boolean existsDayByUserIDAndDate(LocalDate date, Long userID) {
         return dayRepository.existsDayByDateAndUserId(date, userID);
     }
+
+    @Override
+    public List<Day> findDaysByWeekIdAndUserId(Long weekId, Long userId) {
+        return dayRepository.findDaysByWeekIdAndUserId(weekId, userId);
+    }
+
+    @Override
+    public List<Day> findDaysByMonthIdAndUserId(Long monthId, Long userId) {
+        return dayRepository.findDaysByMonthIdAndUserId(monthId, userId);
+    }
 }

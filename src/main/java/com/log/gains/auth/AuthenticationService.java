@@ -1,10 +1,7 @@
 package com.log.gains.auth;
 
-import com.log.gains.exception.EmailNotValidException;
+import com.log.gains.exception.*;
 import com.log.gains.jwt.JwtService;
-import com.log.gains.exception.EmailAlreadyExistsException;
-import com.log.gains.exception.UsernameAlreadyTakenException;
-import com.log.gains.exception.UsernameEmailException;
 import com.log.gains.user.Role;
 import com.log.gains.user.User;
 import com.log.gains.user.UserRepository;
@@ -14,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,12 +27,12 @@ public class AuthenticationService {
     public AuthenticationResponse register (RegistrationRequest request) {
 
         validateEmail(request.getEmail());
-
-        if (repository.findByUsername(request.getUsername()).isPresent()) {
-            throw new UsernameAlreadyTakenException("Username is already taken");
-        }
+        validatePassword(request.getPassword());
         if (repository.findByEmail(request.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException("Account with such email is already registered");
+        }
+        if (repository.findByUsername(request.getUsername()).isPresent()) {
+            throw new UsernameAlreadyTakenException("Username is already taken");
         }
         if (repository.findByUsername(request.getEmail()).isPresent()) {
             throw new UsernameEmailException("Cannot use this email as it has already been set as an username before");
@@ -57,6 +55,10 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse login (LoginRequest request) {
+        boolean existsUser = repository.findByUsername(request.getUsername()).isPresent();
+        if (!existsUser) {
+            throw new UserNotFoundException("Username not registered");
+        }
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
@@ -74,6 +76,16 @@ public class AuthenticationService {
         Matcher matcher = pattern.matcher(email);
         if (!matcher.matches()) {
             throw new EmailNotValidException("Not a valid email");
+        }
+    }
+
+    public void validatePassword(String password) {
+        //At least 6 characters, at least 1 capital letter, at least one lowercase letter, at least one number
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$";
+        Pattern pattern = Pattern.compile(passwordRegex);
+        Matcher matcher = pattern.matcher(password);
+        if (!matcher.matches()) {
+            throw new PasswordNotValidException("Not a valid password");
         }
     }
 }
