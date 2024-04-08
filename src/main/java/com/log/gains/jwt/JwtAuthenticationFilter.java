@@ -1,5 +1,6 @@
-package com.log.gains.config;
+package com.log.gains.jwt;
 
+import com.log.gains.jwt.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

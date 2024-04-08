@@ -1,22 +1,39 @@
-package com.log.gains.period.day;
+package com.log.gains.day;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.log.gains.date.DateService;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/day")
 @RestController
 public class DayController {
     private final DayService dayService;
+    private final DateService dateService;
 
-    public DayController(DayService dayService) {
+    public DayController(DayService dayService, DateService dateService) {
         this.dayService = dayService;
+        this.dateService = dateService;
     }
 
-    @GetMapping("/days")
+    @PostMapping
+    public void createNewDay (@RequestBody RequestNewDayDTO dayDTO) {
+        // Long userId = getAuthUser();
+        dayService.createDay(dayDTO);
+    }
+
+    @DeleteMapping
+    public void deleteExistingDay (@RequestBody String date) {
+        dayService.deleteExistingDay(date);
+    }
+
+    @GetMapping("/all")
     public List<Day> getAllDays () {
-        return dayService.getAllDays();
+        return dayService.getUsersDays();
+    }
+
+    @PutMapping
+    public void updateDay (@RequestBody RequestedDayUpdateDTO updateDTO) {
+        dayService.updateUsersDay(updateDTO);
     }
 }

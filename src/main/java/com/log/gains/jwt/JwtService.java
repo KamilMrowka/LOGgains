@@ -1,4 +1,4 @@
-package com.log.gains.config;
+package com.log.gains.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

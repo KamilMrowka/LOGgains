@@ -1,70 +1,45 @@
-package com.log.gains.period.day;
+package com.log.gains.day;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Setter
+@Getter
 @Entity
+@Table (
+        name = "_day"
+)
 public class Day {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dayId;
+    @Column (
+            nullable = false
+    )
+    private Long userId;
+
+    @Column (
+            nullable = false
+    )
+    private Long weekId;
+    @Column (
+            nullable = false
+    )
+    private Long monthId;
+
     private double weightMeasurement;
+
     private double caloriesConsumed;
-    private LocalDate dataDate;
-
-    public Day(Long dayId, double weightMeasurement, double caloriesConsumed) {
-        this.dayId = dayId;
-        this.weightMeasurement = weightMeasurement;
-        this.caloriesConsumed = caloriesConsumed;
-        this.dataDate = LocalDate.now();
-    }
-
-    public Day(double weightMeasurement, double caloriesConsumed, LocalDate dataDate) {
-        this.weightMeasurement = weightMeasurement;
-        this.caloriesConsumed = caloriesConsumed;
-        this.dataDate = dataDate;
-    }
-
-    public Day(double weightMeasurement, double caloriesConsumed) {
-        this.weightMeasurement = weightMeasurement;
-        this.caloriesConsumed = caloriesConsumed;
-        this.dataDate = LocalDate.now();
-    }
+    @Column(
+            nullable = false
+    )
+    private LocalDate date;
 
     public Day() {
-    }
-
-    public Long getDayId() {
-        return dayId;
-    }
-
-    public double getWeightMeasurement() {
-        return weightMeasurement;
-    }
-
-    public void setWeightMeasurement(double weightMeasurement) {
-        this.weightMeasurement = weightMeasurement;
-    }
-
-    public double getCaloriesConsumed() {
-        return caloriesConsumed;
-    }
-
-    public void setCaloriesConsumed(double caloriesConsumed) {
-        this.caloriesConsumed = caloriesConsumed;
-    }
-
-    public LocalDate getDataDate() {
-        return dataDate;
-    }
-
-    public void setDataDate(LocalDate dataDate) {
-        this.dataDate = dataDate;
     }
 
     @Override
@@ -72,12 +47,12 @@ public class Day {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Day day = (Day) o;
-        return Double.compare(weightMeasurement, day.weightMeasurement) == 0 && Objects.equals(dayId, day.dayId) && Objects.equals(caloriesConsumed, day.caloriesConsumed) && Objects.equals(dataDate, day.dataDate);
+        return Double.compare(weightMeasurement, day.weightMeasurement) == 0 && Objects.equals(dayId, day.dayId) && Objects.equals(caloriesConsumed, day.caloriesConsumed) && Objects.equals(date, day.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dayId, weightMeasurement, caloriesConsumed, dataDate);
+        return Objects.hash(dayId, weightMeasurement, caloriesConsumed, date);
     }
 
     @Override
@@ -86,7 +61,7 @@ public class Day {
                 "dayId=" + dayId +
                 ", weightMeasurement=" + weightMeasurement +
                 ", caloriesConsumed=" + caloriesConsumed +
-                ", dataDate=" + dataDate +
+                ", dataDate=" + date +
                 '}';
     }
 }

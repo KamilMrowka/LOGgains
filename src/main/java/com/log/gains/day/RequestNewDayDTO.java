@@ -1,4 +1,6 @@
-package com.log.gains.period.day;
+package com.log.gains.day;
 
-public record RequestNewDayDTO(Double caloriesConsumed, Double weightMeasurement) {
+import java.time.LocalDate;
+
+public record RequestNewDayDTO(Double caloriesConsumed, Double weightMeasurement, String date) {
 }
