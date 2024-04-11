@@ -9,11 +9,9 @@ import java.util.List;
 @RestController
 public class DayController {
     private final DayService dayService;
-    private final DateService dateService;
 
     public DayController(DayService dayService, DateService dateService) {
         this.dayService = dayService;
-        this.dateService = dateService;
     }
 
     @PostMapping

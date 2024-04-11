@@ -3,7 +3,6 @@ package com.log.gains.day;
 import com.log.gains.exception.*;
 import com.log.gains.period.PeriodService;
 import com.log.gains.period.month.MonthService;
-import com.log.gains.period.week.Week;
 import com.log.gains.period.week.WeekService;
 import com.log.gains.user.UserService;
 import org.springframework.beans.factory.annotation.Qualifier;

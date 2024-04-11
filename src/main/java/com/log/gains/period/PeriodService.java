@@ -37,6 +37,21 @@ public class PeriodService {
         return medianAfter - medianBefore;
     }
 
+    public double getAverageCalories (List<Day> daysList) {
+        int numberOfDays = daysList.size();
+        
+        double sumOfCalories = 0;
+        double avgCalories = 0;
+        for (Day day : daysList) {
+            sumOfCalories += day.getCaloriesConsumed();
+        }
+        if (numberOfDays == 0 | sumOfCalories == 0) {
+            return 0;
+        }
+        avgCalories = sumOfCalories / numberOfDays;
+        return avgCalories;
+    }
+
 //    public Long getCorrespondingWeekId (LocalDate date) {
 //        return weekService.getCorrespondingWeekId(date);
 //    }

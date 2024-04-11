@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Repository
@@ -14,9 +14,9 @@ public interface DayRepository extends JpaRepository<Day, Long> {
 
     boolean existsDayByDateAndUserId(LocalDate localDate, Long userID);
 
-    List<Day> findAllByUserId (Long userId);
+    ArrayList<Day> findAllByUserId (Long userId);
 
-    List<Day> findDaysByWeekIdAndUserId (Long weekId, Long userId);
+    ArrayList<Day> findDaysByWeekIdAndUserId (Long weekId, Long userId);
 
-    List<Day> findDaysByMonthIdAndUserId (Long monthId, Long userId);
+    ArrayList<Day> findDaysByMonthIdAndUserId (Long monthId, Long userId);
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,7 +86,7 @@ public class WeekService {
         return periodService.getMedianWeight(weekDays);
     }
 
-    public List<Day> findUsersDaysByWeekId (Long weekId) {
+    public ArrayList<Day> findUsersDaysByWeekId (Long weekId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         return dayDAO.findDaysByWeekIdAndUserId(weekId, userService.getIdByUsername(username));

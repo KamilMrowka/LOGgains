@@ -1,6 +1,7 @@
 package com.log.gains.day;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +16,7 @@ public interface DayDAO{
 
     boolean existsDayByUserIDAndDate(LocalDate date, Long userID);
 
-    List<Day> findDaysByWeekIdAndUserId (Long weekId, Long userId);
+    ArrayList<Day> findDaysByWeekIdAndUserId (Long weekId, Long userId);
 
     List<Day> findDaysByMonthIdAndUserId (Long monthId, Long userId);
 

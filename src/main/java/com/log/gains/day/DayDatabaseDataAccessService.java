@@ -3,6 +3,7 @@ package com.log.gains.day;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +46,7 @@ public class DayDatabaseDataAccessService implements DayDAO{
     }
 
     @Override
-    public List<Day> findDaysByWeekIdAndUserId(Long weekId, Long userId) {
+    public ArrayList<Day> findDaysByWeekIdAndUserId(Long weekId, Long userId) {
         return dayRepository.findDaysByWeekIdAndUserId(weekId, userId);
     }
 
