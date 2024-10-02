@@ -31,13 +31,18 @@ public class Day {
     )
     private Long monthId;
 
-    private double weightMeasurement;
+    private float weightMeasurement;
 
-    private double caloriesConsumed;
+    private float caloriesConsumed;
     @Column(
             nullable = false
     )
     private LocalDate date;
+
+    private String fDate;
+
+    private String weekDay;
+
 
     public Day() {
     }

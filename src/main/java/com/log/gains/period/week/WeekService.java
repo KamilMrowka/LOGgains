@@ -7,16 +7,17 @@ import com.log.gains.day.DayService;
 import com.log.gains.exception.NotStagedDateException;
 import com.log.gains.exception.UnacceptedDateFormatException;
 import com.log.gains.period.PeriodService;
+import com.log.gains.period.SortDayByDate;
 import com.log.gains.user.UserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,10 +30,6 @@ public class WeekService {
     private final PeriodService periodService;
 
 
-    private LocalDate getFirstDay (LocalDate date) {
-        return date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-    }
-
     public WeekService(WeekDao weekDao, PeriodService periodService, @Lazy DayService dayService, DayRepository dayRepository, DayDAO dayDAO, UserService userService, PeriodService periodService1) {
         this.weekDao = weekDao;
         this.dayDAO = dayDAO;
@@ -40,15 +37,8 @@ public class WeekService {
         this.periodService = periodService1;
     }
 
-    private Long createWeek (LocalDate includedDay) {
-        if (includedDay.isBefore(LocalDate.of(2023,1, 1)) || includedDay.isAfter(LocalDate.of(2100, 1, 1))) {
-            throw new NotStagedDateException("Select a day from 2023 upwards and before the year of 2100");
-        }
-        LocalDate firstDay = getFirstDay(includedDay);
-        LocalDate lastDay = includedDay.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
-        Week week = new Week(firstDay, lastDay);
-        weekDao.saveWeek(week);
-        return week.getId();
+    public LocalDate getFirstDay (LocalDate date) {
+        return date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
     }
 
     public Long getCorrespondingWeekId (LocalDate date) {
@@ -69,13 +59,16 @@ public class WeekService {
         return week.getId();
     }
 
-    public Week getWeek (String dateString) {
-        LocalDate date;
-        try {
-            date = LocalDate.parse(dateString);
-        } catch (Exception e) {
-            throw new UnacceptedDateFormatException("Provided date has a wrong format. F: YYYY-MM-DD");
+    public ArrayList<String> getWeekDays(LocalDate firstDay) {
+        ArrayList<String> weekDays = new ArrayList<>();
+        LocalDate lastDay = firstDay.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        for (LocalDate day = firstDay; !day.equals(lastDay.plusDays(1)); day = day.plusDays(1)) {
+            weekDays.add(day.toString());
         }
+        return weekDays;
+    }
+
+    public Week getWeek (LocalDate date) {
         LocalDate firstDay = getFirstDay(date);
         return weekDao.getWeekByFirstDay(firstDay).orElseThrow();
     }
@@ -89,7 +82,23 @@ public class WeekService {
     public ArrayList<Day> findUsersDaysByWeekId (Long weekId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        return dayDAO.findDaysByWeekIdAndUserId(weekId, userService.getIdByUsername(username));
+        ArrayList<Day> unsortedDays = dayDAO.findDaysByWeekIdAndUserId(weekId, userService.getIdByUsername(username));
+        return sortByDate(unsortedDays);
     }
 
+    private ArrayList<Day> sortByDate (ArrayList<Day> days) {
+        Collections.sort(days, new SortDayByDate());
+        return days;
+    }
+
+    private Long createWeek (LocalDate includedDay) {
+        if (includedDay.isBefore(LocalDate.of(2023,1, 1)) || includedDay.isAfter(LocalDate.of(2100, 1, 1))) {
+            throw new NotStagedDateException("Select a day from 2023 upwards and before the year of 2100");
+        }
+        LocalDate firstDay = getFirstDay(includedDay);
+        LocalDate lastDay = includedDay.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+        Week week = new Week(firstDay, lastDay);
+        weekDao.saveWeek(week);
+        return week.getId();
+    }
 }

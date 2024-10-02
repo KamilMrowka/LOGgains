@@ -12,8 +12,16 @@ public class DateService {
         try {
             parsedDate = LocalDate.parse(date);
         } catch (Exception e) {
-            throw new UnacceptedDateFormatException("Incorrect date format, or no date provided. F: YYYY-MM-DD");
+            throw new UnacceptedDateFormatException("Incorrect date format. F: YYYY-MM-DD");
         }
         return parsedDate;
+    }
+
+    public String formatDate (LocalDate date) {
+        int day = date.getDayOfMonth();
+        int month = date.getMonthValue();
+        // int year = date.getYear();
+
+        return day + "." + month;
     }
 }

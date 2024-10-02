@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DayDAO{
+
     void saveDay(Day day);
     List<Day> getAllUsersDays(Long userId);
     void updateUsersDay(Day day);
@@ -18,6 +19,6 @@ public interface DayDAO{
 
     ArrayList<Day> findDaysByWeekIdAndUserId (Long weekId, Long userId);
 
-    List<Day> findDaysByMonthIdAndUserId (Long monthId, Long userId);
+    ArrayList<Day> findDaysByMonthIdAndUserId (Long monthId, Long userId);
 
 }

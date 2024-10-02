@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository("database")
 public class DayDatabaseDataAccessService implements DayDAO{
+
     private final DayRepository dayRepository;
 
     public DayDatabaseDataAccessService(DayRepository dayRepository) {
@@ -51,7 +52,7 @@ public class DayDatabaseDataAccessService implements DayDAO{
     }
 
     @Override
-    public List<Day> findDaysByMonthIdAndUserId(Long monthId, Long userId) {
+    public ArrayList<Day> findDaysByMonthIdAndUserId(Long monthId, Long userId) {
         return dayRepository.findDaysByMonthIdAndUserId(monthId, userId);
     }
 }

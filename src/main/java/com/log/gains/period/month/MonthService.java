@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,21 +30,7 @@ public class MonthService {
         this.userService = userService;
     }
 
-
-
-    private Long createMonth (LocalDate includedDay) {
-        if (includedDay.isBefore(LocalDate.of(2023,1, 1)) || includedDay.isAfter(LocalDate.of(2100, 1, 1))) {
-            throw new NotStagedDateException("Select a day from 2023 upwards and before the year of 2100");
-        }
-        LocalDate firstDay = includedDay.withDayOfMonth(1);
-        int lengthOfMonth = firstDay.lengthOfMonth();
-        LocalDate lastDay = firstDay.plusDays(lengthOfMonth - 1);
-        Month month = new Month(firstDay, lastDay);
-        monthDao.saveMonth(month);
-        return month.getId();
-    }
-
-    public Long getCorrespondingMonthId (LocalDate date) {
+   public Long getCorrespondingMonthId (LocalDate date) {
         LocalDate firstDay = date.withDayOfMonth(1);
         Long correspondingMonthId;
         Optional<Month> savedMonth = monthDao.getMonthByFirstDay(firstDay);
@@ -67,10 +54,21 @@ public class MonthService {
         return periodService.getMedianWeight(monthDays);
     }
 
-    private List<Day> findUsersDaysByMonthId (Long monthId) {
+    public ArrayList<Day> findUsersDaysByMonthId (Long monthId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         return dayDAO.findDaysByMonthIdAndUserId(monthId, userService.getIdByUsername(username));
     }
 
+    private Long createMonth (LocalDate includedDay) {
+        if (includedDay.isBefore(LocalDate.of(2023,1, 1)) || includedDay.isAfter(LocalDate.of(2100, 1, 1))) {
+            throw new NotStagedDateException("Select a day from 2023 upwards and before the year of 2100");
+        }
+        LocalDate firstDay = includedDay.withDayOfMonth(1);
+        int lengthOfMonth = firstDay.lengthOfMonth();
+        LocalDate lastDay = firstDay.plusDays(lengthOfMonth - 1);
+        Month month = new Month(firstDay, lastDay);
+        monthDao.saveMonth(month);
+        return month.getId();
+    }
 }

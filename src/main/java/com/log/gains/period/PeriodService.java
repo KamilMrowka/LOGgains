@@ -1,11 +1,7 @@
 package com.log.gains.period;
 
 import com.log.gains.day.Day;
-import com.log.gains.period.month.MonthService;
-import com.log.gains.period.week.WeekService;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,12 +9,12 @@ import java.util.List;
 @Service
 public class PeriodService {
 
-    public double getMedianWeight (List<Day> days) {
+    public float getMedianWeight (List<Day> days) {
         if (days.isEmpty()) {
             return 0;
         }
-        List<Double> measurements = new ArrayList<>();
-        double median;
+        List<Float> measurements = new ArrayList<>();
+        float median;
         for (Day day: days) {
             measurements.add(day.getWeightMeasurement());
         }
@@ -30,18 +26,17 @@ public class PeriodService {
             median = measurements.get(measurementsAmount / 2);
         }
 
+        median = Math.round(median * 100.0f) / 100.0f;
+
+
         return median;
     }
 
-    public double getCalculatedWeightChange (double medianBefore, double medianAfter) {
-        return medianAfter - medianBefore;
-    }
-
-    public double getAverageCalories (List<Day> daysList) {
+    public float getAverageCalories (List<Day> daysList) {
         int numberOfDays = daysList.size();
         
-        double sumOfCalories = 0;
-        double avgCalories = 0;
+        float sumOfCalories = 0;
+        float avgCalories = 0;
         for (Day day : daysList) {
             sumOfCalories += day.getCaloriesConsumed();
         }
@@ -52,11 +47,11 @@ public class PeriodService {
         return avgCalories;
     }
 
-//    public Long getCorrespondingWeekId (LocalDate date) {
-//        return weekService.getCorrespondingWeekId(date);
-//    }
-//
-//    public Long getCorrespondingMonthId (LocalDate date) {
-//        return monthService.getCorrespondingMonthId(date);
-//    }
+    public PeriodComparison builComparison (ArrayList<Day> p1, ArrayList<Day> p2) {
+        
+        float calculatedWeightChange = getMedianWeight(p1) - getMedianWeight(p2);
+        float averageCaloriesChange = getAverageCalories(p1) - getAverageCalories(p2);
+
+        return new PeriodComparison(calculatedWeightChange, averageCaloriesChange); 
+    }
 }

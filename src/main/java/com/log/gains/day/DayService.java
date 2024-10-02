@@ -1,5 +1,6 @@
 package com.log.gains.day;
 
+import com.log.gains.date.DateService;
 import com.log.gains.exception.*;
 import com.log.gains.period.PeriodService;
 import com.log.gains.period.month.MonthService;
@@ -19,12 +20,14 @@ public class DayService {
     private final UserService userService;
     private final WeekService weekService;
     private final MonthService monthservice;
+    private final DateService dateService;
 
-    public DayService(@Qualifier("database") DayDAO dayDAO, UserService userService, WeekService weekService, MonthService monthService, PeriodService periodService, WeekService weekService1, MonthService service, MonthService monthservice, MonthService monthservice1) {
+    public DayService(@Qualifier("database") DayDAO dayDAO, UserService userService, WeekService weekService, MonthService monthService, PeriodService periodService, DateService dateService) {
         this.dayDAO = dayDAO;
         this.userService = userService;
         this.weekService = weekService;
         this.monthservice = monthService;
+        this.dateService = dateService; 
     }
 
 
@@ -65,6 +68,8 @@ public class DayService {
         } else {
             day.setDate(LocalDate.parse(dayDTO.date()));
         }
+        day.setWeekDay(day.getDate().getDayOfWeek().toString().substring(0, 3));
+        day.setFDate(dateService.formatDate(day.getDate()));
         day.setUserId(userService.getIdByUsername(currentUsername));
         day.setWeekId(weekService.getCorrespondingWeekId(day.getDate()));
         day.setMonthId(monthservice.getCorrespondingMonthId(day.getDate()));
@@ -106,7 +111,7 @@ public class DayService {
                 date = LocalDate.parse(updateDTO.date());
             } catch (Exception e) {
                 throw new UnacceptedDateFormatException(
-                        "No date provided or provided date has wrong format. F: 'YEAR-MM-DD'"
+                    "No date provided or provided date has wrong format. F: 'YEAR-MM-DD'"
                 );
             }
         }

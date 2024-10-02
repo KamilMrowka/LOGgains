@@ -3,6 +3,6 @@ import java.util.ArrayList;
 import com.log.gains.day.Day;
 import com.log.gains.period.week.Week;
 
-public record HomePageResponse(ArrayList<Day> weekList, Double medianWeight, Double averageCalories, Week week) {
+public record HomePageResponse(ArrayList<Day> dayList, Double medianWeight, Double averageCalories, Week week, ArrayList<String> weekDays) {
     
 }

@@ -1,19 +1,10 @@
 package com.log.gains.pages;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-
-import org.hibernate.mapping.List;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.log.gains.day.Day;
+import com.log.gains.pages.PageResponses.ComparePageResponse;
 import com.log.gains.pages.PageResponses.HomePageResponse;
-import com.log.gains.period.PeriodService;
-import com.log.gains.period.week.Week;
-import com.log.gains.period.week.WeekService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,17 +12,16 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("api/v1/pages")
 @RequiredArgsConstructor
 public class PagesController {
-    private final WeekService weekService;
-    private final PeriodService periodService;
+    
+    private final PagesService pagesService;
 
     @GetMapping("/homePage")
     public HomePageResponse homePageResponse () {
-        Long weekId = weekService.getCorrespondingWeekId(LocalDate.now());
-        ArrayList<Day> weekList = weekService.findUsersDaysByWeekId(weekId);
-        Week week = weekService.getWeek(LocalDate.now().toString());
-        double medianWeight = periodService.getMedianWeight(weekList);
-        double avgCalories = periodService.getAverageCalories(weekList);
-        HomePageResponse homePageResponse = new HomePageResponse(weekList,medianWeight,avgCalories, week);
-        return homePageResponse;
-   } 
+       return pagesService.construcHomePageResponse(); 
+    } 
+    @GetMapping("/comparePage")
+    public ComparePageResponse comparePageResponse(@RequestParam String date1, @RequestParam String date2) {
+
+        return new ComparePageResponse(null, null, date1, null, null, date2);
+    }
 }
