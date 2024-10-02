@@ -21,4 +21,6 @@ public interface DayDAO{
 
     ArrayList<Day> findDaysByMonthIdAndUserId (Long monthId, Long userId);
 
+    Optional<Day> findDayByDateAndUserId(LocalDate date, Long userId);
+
 }

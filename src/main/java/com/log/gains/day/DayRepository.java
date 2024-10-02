@@ -19,4 +19,5 @@ public interface DayRepository extends JpaRepository<Day, Long> {
     ArrayList<Day> findDaysByWeekIdAndUserId (Long weekId, Long userId);
 
     ArrayList<Day> findDaysByMonthIdAndUserId (Long monthId, Long userId);
+
 }

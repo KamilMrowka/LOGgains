@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DayService {
@@ -32,7 +33,7 @@ public class DayService {
 
 
     public void createDay (RequestNewDayDTO dayDTO) {
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        String currentUsername = getCurrentUser();
         Day day = new Day();
         LocalDate date = null;
 
@@ -86,8 +87,7 @@ public class DayService {
             );
         }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = authentication.getName();
+        String currentUsername = getCurrentUser();
 
         Day day = dayDAO.getUsersDayByDate(checkedDate, userService.getIdByUsername(currentUsername))
                 .orElseThrow(() -> new DayDoesNotExistException("Day has no data to delete"));
@@ -95,7 +95,7 @@ public class DayService {
     }
 
     public List<Day> getUsersDays () {
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+        String currentUsername = getCurrentUser();
         return dayDAO.getAllUsersDays(userService.getIdByUsername(currentUsername));
     }
 
@@ -116,8 +116,7 @@ public class DayService {
             }
         }
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUsername = authentication.getName();
+        String currentUsername = getCurrentUser();
 
 
         Day beingUpdated = dayDAO.getUsersDayByDate(date, userService.getIdByUsername(currentUsername))
@@ -141,5 +140,16 @@ public class DayService {
         }
 
         dayDAO.updateUsersDay(beingUpdated);
+    }
+
+    public Day getToday() {
+        String currentUser = getCurrentUser();
+        Optional<Day> todayOptional = dayDAO.findDayByDateAndUserId(LocalDate.now(), userService.getIdByUsername(currentUser));
+        return todayOptional.orElseGet(Day::new);
+    }
+
+    private String getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 }

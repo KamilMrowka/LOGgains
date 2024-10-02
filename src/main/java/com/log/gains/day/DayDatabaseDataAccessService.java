@@ -55,4 +55,9 @@ public class DayDatabaseDataAccessService implements DayDAO{
     public ArrayList<Day> findDaysByMonthIdAndUserId(Long monthId, Long userId) {
         return dayRepository.findDaysByMonthIdAndUserId(monthId, userId);
     }
+
+    public Optional<Day> findDayByDateAndUserId(LocalDate date, Long userId) {
+        return dayRepository.getDayByDateAndUserId(date, userId);
+    }
+
 }

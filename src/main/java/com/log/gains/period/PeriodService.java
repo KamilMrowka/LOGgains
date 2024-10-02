@@ -54,4 +54,28 @@ public class PeriodService {
 
         return new PeriodComparison(calculatedWeightChange, averageCaloriesChange); 
     }
+
+    public float getHighestWeight(ArrayList<Day> days) {
+        float highestWeight = -1;
+
+        for (Day day : days) {
+            if (day.getWeightMeasurement() > highestWeight) {
+                highestWeight = day.getWeightMeasurement();
+            }
+        }
+
+        return highestWeight != -1 ? highestWeight : 0;
+    }
+
+    public float getLowestWeight(ArrayList<Day> days) {
+        float lowestWeight = 501;
+
+        for (Day day : days) {
+            if (day.getWeightMeasurement() < lowestWeight) {
+                lowestWeight = day.getWeightMeasurement();
+            }
+        }
+
+        return lowestWeight != 501 ? lowestWeight : 0;
+    }
 }

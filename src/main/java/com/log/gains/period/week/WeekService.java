@@ -63,7 +63,9 @@ public class WeekService {
         ArrayList<String> weekDays = new ArrayList<>();
         LocalDate lastDay = firstDay.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
         for (LocalDate day = firstDay; !day.equals(lastDay.plusDays(1)); day = day.plusDays(1)) {
-            weekDays.add(day.toString());
+            String unformattedDay = day.toString();
+            String formattedDay = unformattedDay.split("-")[2] + "." + unformattedDay.split("-")[1];
+            weekDays.add(formattedDay);
         }
         return weekDays;
     }

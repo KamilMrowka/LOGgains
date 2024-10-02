@@ -33,10 +33,25 @@ public class PagesService {
         ArrayList<Day> dayList = weekService.findUsersDaysByWeekId(weekId);
         Week week = weekService.getWeek(LocalDate.now());
         ArrayList<String> weekDays = weekService.getWeekDays(week.getFirstDay());
-        double medianWeight = periodService.getMedianWeight(dayList);
-        double avgCalories = periodService.getAverageCalories(dayList);
-        HomePageResponse homePageResponse = new HomePageResponse(dayList,medianWeight,avgCalories, week, weekDays);
-        return homePageResponse;
+        float medianWeight = periodService.getMedianWeight(dayList);
+        float avgCalories = periodService.getAverageCalories(dayList);
+        float lowestWeight = periodService.getLowestWeight(dayList);
+        float highestWeight = periodService.getHighestWeight(dayList);
+        Day today = dayService.getToday();
+        if (today.equals(new Day())) {
+            today = null;
+        }
+
+        return new HomePageResponse(
+                dayList,
+                medianWeight,
+                avgCalories,
+                week,
+                weekDays,
+                today,
+                lowestWeight,
+                highestWeight
+        );
     }
 
     public ComparePageResponse constructComparePageResponse(String date1, String date2) {
