@@ -3,6 +3,7 @@ package com.log.gains.pages;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import com.log.gains.graph.GraphData;
 import org.springframework.stereotype.Service;
 
 import com.log.gains.date.DateService;
@@ -41,6 +42,7 @@ public class PagesService {
         if (today.equals(new Day())) {
             today = null;
         }
+        ArrayList<GraphData> graphData = new ArrayList<>();
 
         return new HomePageResponse(
                 dayList,

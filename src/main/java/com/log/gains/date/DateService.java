@@ -22,6 +22,6 @@ public class DateService {
         int month = date.getMonthValue();
         // int year = date.getYear();
 
-        return day + "." + month;
+        return (day < 10 ? ("0" + day) : day) + "." + month;
     }
 }
