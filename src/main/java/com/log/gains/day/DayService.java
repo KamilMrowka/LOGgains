@@ -142,12 +142,6 @@ public class DayService {
         dayDAO.updateUsersDay(beingUpdated);
     }
 
-    public Day getToday() {
-        String currentUser = getCurrentUser();
-        Optional<Day> todayOptional = dayDAO.findDayByDateAndUserId(LocalDate.now(), userService.getIdByUsername(currentUser));
-        return todayOptional.orElseGet(Day::new);
-    }
-
     private String getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName();

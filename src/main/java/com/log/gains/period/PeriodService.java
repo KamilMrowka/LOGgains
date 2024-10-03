@@ -47,7 +47,7 @@ public class PeriodService {
         return avgCalories;
     }
 
-    public PeriodComparison builComparison (ArrayList<Day> p1, ArrayList<Day> p2) {
+    public PeriodComparison buildComparison(ArrayList<Day> p1, ArrayList<Day> p2) {
         
         float calculatedWeightChange = getMedianWeight(p1) - getMedianWeight(p2);
         float averageCaloriesChange = getAverageCalories(p1) - getAverageCalories(p2);

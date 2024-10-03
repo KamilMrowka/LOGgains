@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import com.log.gains.graph.GraphData;
+import com.log.gains.graph.GraphDataService;
+import com.log.gains.period.Analysis;
 import org.springframework.stereotype.Service;
 
 import com.log.gains.date.DateService;
@@ -27,6 +29,7 @@ public class PagesService {
     private final PeriodService periodService;
     private final DateService dateService;
     private final DayService dayService;
+    private final GraphDataService graphDataService;
     
 
     public HomePageResponse construcHomePageResponse() {
@@ -34,93 +37,22 @@ public class PagesService {
         ArrayList<Day> dayList = weekService.findUsersDaysByWeekId(weekId);
         Week week = weekService.getWeek(LocalDate.now());
         ArrayList<String> weekDays = weekService.getWeekDays(week.getFirstDay());
+
         float medianWeight = periodService.getMedianWeight(dayList);
         float avgCalories = periodService.getAverageCalories(dayList);
         float lowestWeight = periodService.getLowestWeight(dayList);
         float highestWeight = periodService.getHighestWeight(dayList);
-        Day today = dayService.getToday();
-        if (today.equals(new Day())) {
-            today = null;
-        }
-        ArrayList<GraphData> graphData = new ArrayList<>();
+        ArrayList<GraphData> graphData = graphDataService.constructGraphData(weekDays, dayList);
+
+        Analysis weekAnalysis = new Analysis();
+        weekAnalysis.setAverageCalories(avgCalories);
+        weekAnalysis.setMedianWeight(medianWeight);
+        weekAnalysis.setLowestWeight(lowestWeight);
+        weekAnalysis.setHighestWeight(highestWeight);
 
         return new HomePageResponse(
-                dayList,
-                medianWeight,
-                avgCalories,
-                week,
-                weekDays,
-                today,
-                lowestWeight,
-                highestWeight
+                weekAnalysis,
+                graphData
         );
-    }
-
-    public ComparePageResponse constructComparePageResponse(String date1, String date2) {
-
-        boolean areDatesSameWeek = false;
-        boolean areDatesSameMonth = false;
-        LocalDate parsedDate1 = dateService.parseDate(date1);
-        LocalDate parsedDate2 = dateService.parseDate(date2);
-        Long weekId1;
-        Long weekId2;
-        Long monthId1;
-        Long monthId2;
-  
-        if (parsedDate1.isAfter(parsedDate2)) {
-            weekId1 = weekService.getCorrespondingWeekIdIfExists(parsedDate1);
-            weekId2 = weekService.getCorrespondingWeekIdIfExists(parsedDate2);
-            monthId1 = monthService.getCorrespondingMonthIdIfExists(parsedDate1);
-            monthId2 = monthService.getCorrespondingMonthIdIfExists(parsedDate2);
-        } else {
-            weekId1 = weekService.getCorrespondingWeekIdIfExists(parsedDate2);
-            weekId2 = weekService.getCorrespondingWeekIdIfExists(parsedDate1);
-            monthId1 = monthService.getCorrespondingMonthIdIfExists(parsedDate2);
-            monthId2 = monthService.getCorrespondingMonthIdIfExists(parsedDate1);
-        }
-        ArrayList<Day> weekOne;
-        ArrayList<Day> weekTwo;
-        ArrayList<Day> monthOne;
-        ArrayList<Day> monthTwo;
-        PeriodComparison weekComparison;
-        PeriodComparison monthComparison;
-        ComparePageResponse comparePageResponse;
-
-        if (weekId1 == weekId2) {
-            areDatesSameWeek = true;
-            areDatesSameMonth = true;
-        } else if (monthId1 == monthId2) {
-            areDatesSameMonth = true;
-        }
-
-        weekOne = weekService.findUsersDaysByWeekId(weekId1);
-
-        // same week & same month
-        // not same week & same month
-        // not same week & not same month
-
-        if (areDatesSameWeek) {
-            weekOne = weekService.findUsersDaysByWeekId(weekId1);
-            weekTwo = null;
-            monthOne = monthService.findUsersDaysByMonthId(monthId1);
-            monthTwo = null;
-            weekComparison = null;
-            monthComparison = null;
-            comparePageResponse = new ComparePageResponse(weekOne, weekTwo, weekComparison, monthOne, monthTwo, monthComparison);
-            return comparePageResponse; 
-        } else if (areDatesSameMonth) {
-            weekOne = weekService.findUsersDaysByWeekId(weekId1);
-            weekTwo = weekService.findUsersDaysByWeekId(weekId2);
-            monthOne = monthService.findUsersDaysByMonthId(monthId1);
-            monthTwo = null;
-            weekComparison = periodService.builComparison(weekOne, weekTwo);
-            monthComparison = null;
-            comparePageResponse = new ComparePageResponse(weekOne, weekTwo, weekComparison, monthOne, monthTwo, monthComparison);
-            return comparePageResponse;
-        } else {
-            
-        }
-
-        return null;
     }
 }
