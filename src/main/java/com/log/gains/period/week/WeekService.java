@@ -5,7 +5,6 @@ import com.log.gains.day.DayDAO;
 import com.log.gains.day.DayRepository;
 import com.log.gains.day.DayService;
 import com.log.gains.exception.NotStagedDateException;
-import com.log.gains.exception.UnacceptedDateFormatException;
 import com.log.gains.period.PeriodService;
 import com.log.gains.period.SortDayByDate;
 import com.log.gains.user.UserService;
@@ -59,9 +58,10 @@ public class WeekService {
         return week.getId();
     }
 
-    public ArrayList<String> getWeekDays(LocalDate firstDay) {
+    public ArrayList<String> getWeekAsFormattedDays(LocalDate firstDay) {
         ArrayList<String> weekDays = new ArrayList<>();
         LocalDate lastDay = firstDay.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+
         for (LocalDate day = firstDay; !day.equals(lastDay.plusDays(1)); day = day.plusDays(1)) {
             String unformattedDay = day.toString();
             String formattedDay = unformattedDay.split("-")[2] + "." + unformattedDay.split("-")[1];

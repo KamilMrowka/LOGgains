@@ -1,4 +1,5 @@
 package com.log.gains.pages;
+import com.log.gains.pages.PageResponses.CalendarPageResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,10 +19,10 @@ public class PagesController {
     @GetMapping("/homePage")
     public HomePageResponse homePageResponse () {
        return pagesService.construcHomePageResponse(); 
-    } 
-    @GetMapping("/comparePage")
-    public ComparePageResponse comparePageResponse(@RequestParam String date1, @RequestParam String date2) {
+    }
 
-        return new ComparePageResponse(null, null, date1, null, null, date2);
+    @GetMapping("/calendarPage")
+    public CalendarPageResponse calendarPageResponse(@RequestParam("date") String date) {
+        return pagesService.constructCalendarPageResponse(date);
     }
 }

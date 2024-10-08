@@ -1,19 +1,23 @@
 package com.log.gains.pages;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.log.gains.graph.GraphData;
 import com.log.gains.graph.GraphDataService;
+import com.log.gains.pages.PageResponses.CalendarPageResponse;
 import com.log.gains.period.Analysis;
 import org.springframework.stereotype.Service;
 
 import com.log.gains.date.DateService;
 import com.log.gains.day.Day;
 import com.log.gains.day.DayService;
-import com.log.gains.pages.PageResponses.ComparePageResponse;
 import com.log.gains.pages.PageResponses.HomePageResponse;
-import com.log.gains.period.PeriodComparison;
 import com.log.gains.period.PeriodService;
 import com.log.gains.period.month.MonthService;
 import com.log.gains.period.week.Week;
@@ -36,7 +40,7 @@ public class PagesService {
         Long weekId = weekService.getCorrespondingWeekId(LocalDate.now());
         ArrayList<Day> dayList = weekService.findUsersDaysByWeekId(weekId);
         Week week = weekService.getWeek(LocalDate.now());
-        ArrayList<String> weekDays = weekService.getWeekDays(week.getFirstDay());
+        ArrayList<String> weekDays = weekService.getWeekAsFormattedDays(week.getFirstDay());
 
         float medianWeight = periodService.getMedianWeight(dayList);
         float avgCalories = periodService.getAverageCalories(dayList);
@@ -54,5 +58,193 @@ public class PagesService {
                 weekAnalysis,
                 graphData
         );
+    }
+
+    public CalendarPageResponse constructCalendarPageResponse(String month) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM-yyyy");
+        LocalDate localDate;
+        ArrayList<ArrayList<GraphData>> weeks = new ArrayList<>();
+        try {
+            YearMonth yearMonth = YearMonth.parse(month, formatter);
+            localDate = yearMonth.atDay(1);
+        } catch (Exception e) {
+           throw new RuntimeException("Couldn't parse the given month, correct format: mm-yyyy, date received " + month);
+        }
+
+        Long monthId = monthService.getCorrespondingMonthId(localDate);
+        ArrayList<Day> dayList = monthService.findUsersDaysByMonthId(monthId);
+        ArrayList<GraphData> week0;
+        ArrayList<GraphData> week1;
+        ArrayList<GraphData> week2;
+        ArrayList<GraphData> week3;
+        ArrayList<GraphData> week4;
+        ArrayList<GraphData> week5;
+        ArrayList<GraphData> week6;
+        ArrayList<String> weekDays;
+        int weekZeroLength;
+
+        Analysis monthAnalysis = new Analysis();
+        monthAnalysis.setHighestWeight(periodService.getHighestWeight(dayList));
+        monthAnalysis.setLowestWeight(periodService.getLowestWeight(dayList));
+        monthAnalysis.setMedianWeight(periodService.getMedianWeight(dayList));
+        monthAnalysis.setAverageCalories(periodService.getAverageCalories(dayList));
+
+
+        // Initialize week1 and if necessary week0
+        if (Objects.equals(localDate.getDayOfWeek().getValue(), 1)) {
+            weekDays = weekService.getWeekAsFormattedDays(localDate);
+            week1 = graphDataService.constructGraphData(weekDays, dayList);
+
+            // week0 has to be null if month starts at monday
+            weeks.add(null);
+
+            weeks.add(week1);
+        } else {
+            // Check how many days have to be in the week 0
+            // If month starts at tuesday then length of week zero is 1 (monday in the week before)
+            int monthStartsAtDayOfWeek = localDate.getDayOfWeek().getValue();
+            weekZeroLength = monthStartsAtDayOfWeek - 1;
+
+
+            weekDays = weekService.getWeekAsFormattedDays(localDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
+
+            week0 = graphDataService.constructGraphData(weekDays.subList(0, weekZeroLength), dayList, true);
+            weeks.add(week0);
+
+            // Week 1
+            week1 = graphDataService.constructGraphData(weekDays.subList(weekZeroLength, weekDays.size()), dayList, true);
+            weeks.add(week1);
+        }
+
+        // Week 2
+        weekDays = weekService.getWeekAsFormattedDays(
+                        localDate
+                        .plusWeeks(1)
+                        .with(TemporalAdjusters
+                                .previousOrSame(DayOfWeek.MONDAY)
+                        )
+        );
+
+        week2 = graphDataService.constructGraphData(weekDays, dayList, true);
+        weeks.add(week2);
+
+        // Week3
+        weekDays = weekService.getWeekAsFormattedDays(
+                localDate
+                        .plusWeeks(2)
+                        .with(TemporalAdjusters
+                                .previousOrSame(DayOfWeek.MONDAY)
+                        )
+        );
+
+        week3 = graphDataService.constructGraphData(weekDays, dayList, true);
+        weeks.add(week3);
+
+        // Week4
+
+        weekDays = weekService.getWeekAsFormattedDays(
+                localDate
+                        .plusWeeks(3)
+                        .with(
+                                TemporalAdjusters
+                                .previousOrSame(DayOfWeek.MONDAY)
+                        )
+        );
+        week4 = graphDataService.constructGraphData(weekDays, dayList, true);
+        weeks.add(week4);
+
+        // Week 5 and 6
+        // If week5 ends at sunday -> week6 is empty
+        // if week5 ends at friday(example) then week6 has len=2 (sat, sun)
+
+        LocalDate week5Start = localDate.plusWeeks(4).with(
+                TemporalAdjusters.previousOrSame((DayOfWeek.MONDAY))
+        );
+
+        // Have to check whether the monday is in the same month
+        // If February had started at monday it could end on week4
+        // Then weeks have a len of 5 (week0 is always there though it could be null
+
+        if (week5Start.getMonth().getValue() != localDate.getMonthValue()) {
+
+            return new CalendarPageResponse(
+                    weeks,
+                    monthAnalysis
+            );
+        }
+
+        int week5Len = 0;
+        boolean hasMonthGot6Rows = true;
+        LocalDate lastDayOfTheMonth = week5Start.with(TemporalAdjusters.lastDayOfMonth());
+
+        // Calendar could have 6 rows if a month starts at sunday
+        // or other day close to the end of a week
+
+        // Then we're returning 7 weeks (Arrays)
+        // Because the last array will be rendered in the frontend in different colors
+        // to indicate it's a next month
+
+        for (LocalDate day = week5Start;
+            day.isBefore(lastDayOfTheMonth.plusDays(1)) &&
+            day.isBefore(
+                    week5Start.with(
+                    TemporalAdjusters.
+                            nextOrSame(DayOfWeek.SUNDAY))
+                            .plusDays(1)
+            );
+            day = day.plusDays(1)
+        ) {
+            week5Len++;
+            if (day.plusDays(1).equals(
+                    day.with(TemporalAdjusters.firstDayOfNextMonth()))
+            ) {
+               hasMonthGot6Rows = false;
+            }
+        }
+
+        if (week5Len == 7 && !hasMonthGot6Rows) {
+            weekDays = weekService.getWeekAsFormattedDays(week5Start);
+            week5 = graphDataService.constructGraphData(weekDays, dayList, true);
+            weeks.add(week5);
+
+            return new CalendarPageResponse(
+                    weeks,
+                    monthAnalysis
+            );
+        } else if (week5Len < 7) {
+           weekDays = weekService.getWeekAsFormattedDays(week5Start);
+           week5 = graphDataService.constructGraphData(weekDays.subList(0, week5Len), dayList, true);
+           weeks.add(week5);
+
+           week6 = graphDataService.constructGraphData(weekDays.subList(week5Len, weekDays.size()), dayList, true);
+           weeks.add(week6);
+
+           return new CalendarPageResponse(
+                   weeks,
+                   monthAnalysis
+           );
+        } else {
+            weekDays = weekService.getWeekAsFormattedDays(week5Start);
+            week5 = graphDataService.constructGraphData(weekDays, dayList, true);
+            weeks.add(week5);
+
+            //week6 && week7
+            weekDays = weekService.getWeekAsFormattedDays(week5Start.plusWeeks(1));
+            int week6Len = week5Start.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth() - week5Start.plusWeeks(1).getDayOfMonth()+1;
+
+            week6 = graphDataService.constructGraphData(weekDays.subList(0, week6Len), dayList, true);
+            weeks.add(week6);
+
+            //week7
+
+            weeks.add(
+                    graphDataService.constructGraphData(weekDays.subList(week6Len, weekDays.size()), dayList, true)
+            );
+
+            return new CalendarPageResponse(
+                    weeks,
+                    monthAnalysis
+            );
+        }
     }
 }
