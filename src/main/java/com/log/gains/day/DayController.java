@@ -10,7 +10,7 @@ import java.util.List;
 public class DayController {
     private final DayService dayService;
 
-    public DayController(DayService dayService, DateService dateService) {
+    public DayController(DayService dayService) {
         this.dayService = dayService;
     }
 

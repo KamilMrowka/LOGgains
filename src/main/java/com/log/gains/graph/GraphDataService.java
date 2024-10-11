@@ -37,9 +37,10 @@ public class GraphDataService {
         int startDaysAtIndx = -1;
         int firstDay = Integer.parseInt(fDates.get(0).split(Pattern.quote("."))[0]);
 
-        for (int i=0; i < days.size()-1; i++) {
+        for (int i=0; i < days.size(); i++) {
             if (days.get(i).getDate().getDayOfMonth() >= firstDay) {
                 startDaysAtIndx = i;
+                break;
             }
         }
 
@@ -47,7 +48,7 @@ public class GraphDataService {
             return constructGraphData(fDates, days.subList(0,0), customKcal);
         }
 
-        List<Day> subListDays = (days.subList(startDaysAtIndx, days.size()-1));
+        List<Day> subListDays = (days.subList(startDaysAtIndx, days.size()));
         return constructGraphData(fDates, subListDays, customKcal);
 
     }

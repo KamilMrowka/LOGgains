@@ -31,6 +31,13 @@ public class DayService {
         this.dateService = dateService; 
     }
 
+    public Day getToday() {
+       String currentUsername = getCurrentUser();
+       Day inCase = new Day();
+       inCase.setFDate(dateService.formatDate(LocalDate.now()));
+       return dayDAO.getUsersDayByDate(LocalDate.now(), userService.getIdByUsername(currentUsername)).orElse(inCase);
+    }
+
 
     public void createDay (RequestNewDayDTO dayDTO) {
         String currentUsername = getCurrentUser();
@@ -125,18 +132,22 @@ public class DayService {
                 ));
 
         boolean hasChanges = false;
-        if (updateDTO.caloriesConsumed() != null &&
+        if (updateDTO.caloriesConsumed() != null && updateDTO.caloriesConsumed() != 0 &&
                 updateDTO.caloriesConsumed() != beingUpdated.getCaloriesConsumed()) {
             beingUpdated.setCaloriesConsumed(updateDTO.caloriesConsumed());
             hasChanges = true;
         }
-        if (updateDTO.weightMeasurement() != null &&
+        if (updateDTO.weightMeasurement() != null && updateDTO.weightMeasurement() != 0 &&
                 updateDTO.weightMeasurement() != beingUpdated.getWeightMeasurement()) {
             beingUpdated.setWeightMeasurement(updateDTO.weightMeasurement());
             hasChanges = true;
         }
         if (!hasChanges) {
             throw new NoApplicableChangesException("No changes to apply");
+        }
+
+        if (beingUpdated.getCaloriesConsumed() == 0 && beingUpdated.getWeightMeasurement() == 0) {
+            dayDAO.deleteUsersDay(beingUpdated);
         }
 
         dayDAO.updateUsersDay(beingUpdated);

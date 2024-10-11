@@ -23,7 +23,7 @@ public class DayDatabaseDataAccessService implements DayDAO{
 
     @Override
     public List<Day> getAllUsersDays(Long id) {
-        return dayRepository.findAllByUserId(id);
+        return dayRepository.findAllByUserIdOrderByDate(id);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class DayDatabaseDataAccessService implements DayDAO{
 
     @Override
     public ArrayList<Day> findDaysByMonthIdAndUserId(Long monthId, Long userId) {
-        return dayRepository.findDaysByMonthIdAndUserId(monthId, userId);
+        return dayRepository.findDaysByMonthIdAndUserIdOrderByDate(monthId, userId);
     }
 
     public Optional<Day> findDayByDateAndUserId(LocalDate date, Long userId) {

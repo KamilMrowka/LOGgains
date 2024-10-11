@@ -6,12 +6,15 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Objects;
+import java.util.List;
 
 import com.log.gains.graph.GraphData;
 import com.log.gains.graph.GraphDataService;
 import com.log.gains.pages.PageResponses.CalendarPageResponse;
+import com.log.gains.pages.PageResponses.ComparePageResponse;
+import com.log.gains.pages.requests.ComparePageRequest;
 import com.log.gains.period.Analysis;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import com.log.gains.date.DateService;
@@ -79,8 +82,10 @@ public class PagesService {
         ArrayList<GraphData> week3;
         ArrayList<GraphData> week4;
         ArrayList<GraphData> week5;
-        ArrayList<GraphData> week6;
+
         ArrayList<String> weekDays;
+        Day today = dayService.getToday();
+        GraphData todayGraphData = graphDataService.constructGraphData(List.of(today.getFDate()), List.of(today)).get(0);
         int daysFromMonthBefore;
 
         Analysis monthAnalysis = new Analysis();
@@ -91,7 +96,7 @@ public class PagesService {
 
 
         // Initialize week0
-        if (Objects.equals(localDate.getDayOfWeek().getValue(), 1)) {
+        if ((localDate.getDayOfWeek().getValue() == 1)) {
             weekDays = weekService.getWeekAsFormattedDays(localDate);
             week0 = graphDataService.constructGraphData(weekDays, dayList);
 
@@ -162,7 +167,8 @@ public class PagesService {
 
             return new CalendarPageResponse(
                     weeks,
-                    monthAnalysis
+                    monthAnalysis,
+                    todayGraphData
             );
         }
 
@@ -199,7 +205,8 @@ public class PagesService {
 
             return new CalendarPageResponse(
                     weeks,
-                    monthAnalysis
+                    monthAnalysis,
+                    todayGraphData
             );
         } else if (week4Len < 7) {
            weekDays = weekService.getWeekAsFormattedDays(week4Start);
@@ -209,7 +216,8 @@ public class PagesService {
 
            return new CalendarPageResponse(
                    weeks,
-                   monthAnalysis
+                   monthAnalysis,
+                   todayGraphData
            );
         } else {
             weekDays = weekService.getWeekAsFormattedDays(week4Start);
@@ -226,8 +234,16 @@ public class PagesService {
 
             return new CalendarPageResponse(
                     weeks,
-                    monthAnalysis
+                    monthAnalysis,
+                    todayGraphData
             );
         }
+    }
+
+    public ComparePageResponse constructComparePageResponse (ComparePageRequest cpr) {
+        LocalDate firstDate;
+        LocalDate secondDate;
+        //TODO !!!!
+        return null;
     }
 }

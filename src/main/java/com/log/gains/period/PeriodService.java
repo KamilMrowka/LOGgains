@@ -38,6 +38,10 @@ public class PeriodService {
         float sumOfCalories = 0;
         float avgCalories = 0;
         for (Day day : daysList) {
+            if (day.getCaloriesConsumed() == 0) {
+                numberOfDays--;
+                continue;
+            }
             sumOfCalories += day.getCaloriesConsumed();
         }
         if (numberOfDays == 0 | sumOfCalories == 0) {
