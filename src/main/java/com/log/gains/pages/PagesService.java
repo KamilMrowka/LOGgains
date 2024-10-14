@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.log.gains.graph.GraphData;
 import com.log.gains.graph.GraphDataService;
@@ -240,10 +241,104 @@ public class PagesService {
         }
     }
 
-    public ComparePageResponse constructComparePageResponse (ComparePageRequest cpr) {
-        LocalDate firstDate;
-        LocalDate secondDate;
-        //TODO !!!!
-        return null;
+    public ComparePageResponse constructComparePageResponse (String date1, String date2) {
+
+        /*
+          List<GraphData> weekOne;
+          List<GraphData> weekTwo;
+          List<GraphData> monthOne;
+          List<GraphData> monthTwo;
+          Analysis weekOneAnalysis;
+          Analysis weekTwoAnalysis;
+          Analysis monthOneAnalysis;
+          Analysis monthTwoAnalysis;
+        */
+
+        List<GraphData> weekOne;
+        List<GraphData> weekTwo;
+        List<GraphData> monthOne;
+        List<GraphData> monthTwo;
+
+        Analysis weekOneAnalysis;
+        Analysis weekTwoAnalysis;
+        Analysis monthOneAnalysis;
+        Analysis monthTwoAnalysis;
+
+        var comparePageResponse = new ComparePageResponse();
+
+        var requestDateFormat = "yyyy-MM-dd";
+        var parsedDate1 = dateService.parseDate(date1, true, requestDateFormat);
+        var parsedDate2 = dateService.parseDate(date2, true, requestDateFormat);
+
+
+        if (parsedDate1 == null && parsedDate2 != null) {
+            parsedDate1 = parsedDate2;
+            parsedDate2 = null;
+        }
+
+        if (parsedDate1 == null) {
+            throw new RuntimeException("No date provided or date provided has wrong format. Expected format: dd-MM-yyy");
+        }
+
+        if (parsedDate2 != null && parsedDate2.isBefore(parsedDate1)) {
+            LocalDate temp = parsedDate2;
+            parsedDate2 = parsedDate1;
+            parsedDate1 = temp;
+        }
+
+        var weekOneId = weekService.getCorrespondingWeekId(parsedDate1);
+        var weekOneDays = weekService.findUsersDaysByWeekId(weekOneId);
+        var weekOneWeekDays = weekService.getWeekAsFormattedDays(parsedDate1.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
+        weekOne = graphDataService.constructGraphData(weekOneWeekDays, weekOneDays);
+        comparePageResponse.setWeekOne(weekOne);
+
+
+        var monthOneId = monthService.getCorrespondingMonthId(parsedDate1);
+        var monthOneDays = monthService.findUsersDaysByMonthId(monthOneId);
+        var monthOneFormattedDays = monthService.getMonthAsFormattedDays(parsedDate1.with(TemporalAdjusters.firstDayOfMonth()));
+        monthOne = graphDataService.constructGraphData(monthOneFormattedDays, monthOneDays);
+        comparePageResponse.setMonthOne(monthOne);
+
+        weekOneAnalysis = periodService.getAnalysis(weekOneDays);
+        monthOneAnalysis = periodService.getAnalysis(monthOneDays);
+        comparePageResponse.setWeekOneAnalysis(weekOneAnalysis);
+        comparePageResponse.setMonthOneAnalysis(monthOneAnalysis);
+
+        // Just one date -> returning only it's data
+        if (parsedDate2 == null ) {
+            return comparePageResponse;
+        }
+
+        var weekTwoId = weekService.getCorrespondingWeekId(parsedDate2);
+
+        // Two dates, but correspond to the same week;
+        if (Objects.equals(weekTwoId, weekOneId)) {
+            return comparePageResponse;
+        }
+
+        var weekTwoDays = weekService.findUsersDaysByWeekId(weekTwoId);
+        var weekTwoWeekDays = weekService.getWeekAsFormattedDays(parsedDate2.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
+        weekTwo = graphDataService.constructGraphData(weekTwoWeekDays, weekTwoDays);
+        weekTwoAnalysis = periodService.getAnalysis(weekTwoDays);
+
+        comparePageResponse.setWeekTwo(weekTwo);
+        comparePageResponse.setWeekTwoAnalysis(weekTwoAnalysis);
+
+
+        var monthTwoId = monthService.getCorrespondingMonthId(parsedDate2);
+
+        // Two dates, different weeks, but same month
+        if (Objects.equals(monthOneId, monthTwoId)) {
+            return comparePageResponse;
+        }
+
+        var monthTwoDays = monthService.findUsersDaysByMonthId(monthTwoId);
+        var monthTwoFormattedDays = monthService.getMonthAsFormattedDays(parsedDate2.with(TemporalAdjusters.firstDayOfMonth()));
+        monthTwo = graphDataService.constructGraphData(monthTwoFormattedDays, monthTwoDays);
+        comparePageResponse.setMonthTwo(monthTwo);
+        monthTwoAnalysis = periodService.getAnalysis(monthTwoDays);
+        comparePageResponse.setMonthTwoAnalysis(monthTwoAnalysis);
+
+        return comparePageResponse;
     }
 }

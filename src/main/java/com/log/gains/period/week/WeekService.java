@@ -89,7 +89,7 @@ public class WeekService {
     }
 
     private ArrayList<Day> sortByDate (ArrayList<Day> days) {
-        Collections.sort(days, new SortDayByDate());
+        days.sort(new SortDayByDate());
         return days;
     }
 

@@ -26,8 +26,8 @@ public class PagesController {
         return pagesService.constructCalendarPageResponse(date);
     }
 
-    @GetMapping("/calendarPage/test")
-    public CalendarPageResponse calendarPageTestResponse(@RequestParam("date") String date) {
-        return pagesService.constructCalendarPageResponse(date);
+    @GetMapping("comparePage")
+    public ComparePageResponse comparePageResponse(@RequestParam("date1") String date1, @RequestParam("date2") String date2) {
+        return pagesService.constructComparePageResponse(date1, date2);
     }
 }

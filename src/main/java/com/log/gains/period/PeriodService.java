@@ -82,4 +82,19 @@ public class PeriodService {
 
         return lowestWeight != 501 ? lowestWeight : 0;
     }
+
+    public Analysis getAnalysis(ArrayList<Day> days) {
+        var lowestWeight = getLowestWeight(days);
+        var highestWeight = getHighestWeight(days);
+        var averageCalories = getAverageCalories(days);
+        var medianWeight = getMedianWeight(days);
+
+        var analysis = new Analysis();
+        analysis.setAverageCalories(averageCalories);
+        analysis.setMedianWeight(medianWeight);
+        analysis.setLowestWeight(lowestWeight);
+        analysis.setHighestWeight(highestWeight);
+
+        return analysis;
+    }
 }

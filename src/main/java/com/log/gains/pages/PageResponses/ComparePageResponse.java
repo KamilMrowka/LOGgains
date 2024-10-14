@@ -1,33 +1,19 @@
 package com.log.gains.pages.PageResponses;
 
-import java.util.ArrayList;
+import com.log.gains.graph.GraphData;
+import com.log.gains.period.Analysis;
+import lombok.Data;
 
-import com.log.gains.day.Day;
+import java.util.List;
 
-public record ComparePageResponse(
-
-   ArrayList<Day> WeekOne,
-
-//      array of { date { dd.mm, weekday }, kg, kcal } ready for graph render
-
-   ArrayList<Day> weekTwo,
-
-//      if same as week one, empty
-
-   Object weekComparison,
-
-//      lost/gained ... kg
-//      around ... % gain/loss per week 
-//      average kcal more/less by...
-//      average daily deficit/surplus throughout between these periods was ... kg 
-
-   ArrayList<Day> monthOne,
-   ArrayList<Day> monthTwo, 
-   Object monthComparison
-
-//      IF ALL ARE EMPTY THROW ERROR
-//      IF SAME MONTH SHOW NO MONTH COMPARISON DATA
-//      IF SAME WEEK SHOW NO COMPARISON DATA, JUST GRAPHS
-) {
-    
+@Data
+public class ComparePageResponse {
+    private List<GraphData> weekOne;
+    private List<GraphData> weekTwo;
+    private List<GraphData> monthOne;
+    private List<GraphData> monthTwo;
+    private Analysis weekOneAnalysis;
+    private Analysis weekTwoAnalysis;
+    private Analysis monthOneAnalysis;
+    private Analysis monthTwoAnalysis;
 }

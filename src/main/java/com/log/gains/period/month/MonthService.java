@@ -10,7 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -70,5 +72,17 @@ public class MonthService {
         Month month = new Month(firstDay, lastDay);
         monthDao.saveMonth(month);
         return month.getId();
+    }
+
+    public ArrayList<String> getMonthAsFormattedDays(LocalDate firstDay) {
+        ArrayList<String> monthDays = new ArrayList<>();
+        LocalDate lastDay = firstDay.with(TemporalAdjusters.lastDayOfMonth());
+
+        for (LocalDate day = firstDay; !day.equals(lastDay.plusDays(1)); day = day.plusDays(1)) {
+            String unformattedDay = day.toString();
+            String formattedDay = unformattedDay.split("-")[2] + "." + unformattedDay.split("-")[1];
+            monthDays.add(formattedDay);
+        }
+        return monthDays;
     }
 }
