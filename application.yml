@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5431/loggains
-    username: kamil
-    password: kamil_compose
+    url: ${POSTGRES_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -11,22 +11,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: false
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: loggainsbusiness@gmail.com
-    password: LogGainsBusiness420
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls.enable: true
-
 logging:
   level:
     org:
       springframework:
-        security: DEBUG
-        web: DEBUG
+        security: WARN
+        web: WARN
 
 
